@@ -1,0 +1,33 @@
+# Default training configuration
+
+data:
+  root_dir: "data/celeba"
+  image_size: 224
+  batch_size: 64
+  num_workers: 4
+  pin_memory: true
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+
+model:
+  name: "custom_cnn"         # "custom_cnn" | "mobilenet_v2" | "xception"
+  pretrained: true
+  num_classes: 2
+  dropout: 0.3
+
+training:
+  epochs: 30
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  optimizer: "adam"           # "adam" | "sgd"
+  scheduler: "cosine"        # "cosine" | "step" | "none"
+  early_stopping_patience: 5
+
+wandb:
+  project: "dla-gender-recognition"
+  entity: null               # set your wandb team/username
+  log_interval: 10
+
+seed: 42
+device: "auto"               # "auto" | "cuda" | "mps" | "cpu"

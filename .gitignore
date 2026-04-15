@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data (large files, download locally)
+data/*
+!data/.gitkeep
+
+# Model checkpoints and outputs
+checkpoints/
+outputs/
+runs/
+
+# Weights & Biases
+wandb/
+
+# Environment variables
+.env
+
+# Distribution
+*.tar.gz
+*.zip
