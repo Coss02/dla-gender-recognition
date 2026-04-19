@@ -8,6 +8,7 @@ import torch
 import pytest
 
 from src.models.custom_cnn import CustomCNN
+from src.models.finetuned import MobileNetV2Gender, XceptionGender
 
 
 class TestCustomCNN:
@@ -47,3 +48,58 @@ class TestCustomCNN:
         for param in model.parameters():
             if param.requires_grad:
                 assert param.grad is not None
+
+
+class TestMobileNetV2Gender:
+    @pytest.fixture()
+    def model(self):
+        config = {"pretrained": True, "dropout": 0.3}
+        return MobileNetV2Gender(config)
+
+    def test_output_shape(self, model):
+        x = torch.randn(2, 3, 224, 224)
+        out = model(x)
+        assert out.shape == (2, 1)
+
+    def test_classifier_head_replaced(self, model):
+        last_layer = model.backbone.classifier[-1]
+        assert isinstance(last_layer, torch.nn.Linear)
+        assert last_layer.out_features == 1
+
+    def test_backbone_frozen_initially(self, model):
+        frozen = [not p.requires_grad for n, p in model.named_parameters()
+                  if "classifier" not in n]
+        assert all(frozen), "Backbone should be frozen after init with pretrained=True"
+
+    def test_unfreeze_backbone(self, model):
+        model.unfreeze_backbone()
+        for param in model.parameters():
+            assert param.requires_grad
+
+
+class TestXceptionGender:
+    @pytest.fixture()
+    def model(self):
+        config = {"pretrained": True, "dropout": 0.3}
+        return XceptionGender(config)
+
+    def test_output_shape(self, model):
+        x = torch.randn(2, 3, 299, 299)
+        out = model(x)
+        assert out.shape == (2, 1)
+
+    def test_classifier_head_replaced(self, model):
+        fc = model.backbone.fc
+        last_layer = fc[-1] if isinstance(fc, torch.nn.Sequential) else fc
+        assert isinstance(last_layer, torch.nn.Linear)
+        assert last_layer.out_features == 1
+
+    def test_backbone_frozen_initially(self, model):
+        frozen = [not p.requires_grad for n, p in model.named_parameters()
+                  if "fc" not in n]
+        assert all(frozen), "Backbone should be frozen after init with pretrained=True"
+
+    def test_unfreeze_backbone(self, model):
+        model.unfreeze_backbone()
+        for param in model.parameters():
+            assert param.requires_grad
