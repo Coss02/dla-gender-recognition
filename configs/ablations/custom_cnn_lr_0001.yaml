@@ -1,0 +1,32 @@
+# Hyperparameter ablation: Custom CNN with lr=0.0001
+
+data:
+  root_dir: "data/celeba"
+  image_size: 224
+  batch_size: 64
+  num_workers: 2
+  pin_memory: false
+  use_official_split: true
+
+model:
+  name: "custom_cnn"
+  pretrained: false
+  num_classes: 1
+  dropout: 0.3
+
+training:
+  epochs: 30
+  learning_rate: 0.0001
+  weight_decay: 0.0001
+  optimizer: "adam"
+  scheduler: "cosine"
+  early_stopping_patience: 5
+
+wandb:
+  project: "dla-gender-recognition"
+  entity: null
+  log_interval: 10
+  enabled: true
+
+seed: 42
+device: "auto"

@@ -74,10 +74,13 @@ def main():
     data_cfg = config["data"]
     image_size = data_cfg["image_size"]
 
+    use_augmentation = not data_cfg.get("no_augmentation", False)
+    train_transform = get_train_transforms(image_size) if use_augmentation else get_eval_transforms(image_size)
+
     train_dataset = CelebAGenderDataset(
         root_dir=data_cfg["root_dir"],
         split="train",
-        transform=get_train_transforms(image_size),
+        transform=train_transform,
     )
     val_dataset = CelebAGenderDataset(
         root_dir=data_cfg["root_dir"],

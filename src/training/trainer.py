@@ -149,6 +149,7 @@ class Trainer:
             import wandb
             wandb.finish()
 
+        self._save_history(history)
         return history
 
     def _train_one_epoch(
@@ -227,3 +228,15 @@ class Trainer:
             path,
         )
         print(f"  -> Saved best checkpoint (val_loss={val_loss:.4f})")
+
+    def _save_history(self, history: dict[str, list[float]]) -> None:
+        """Persist training history as JSON for offline analysis."""
+        import json
+
+        model_name = self.config.get("model", {}).get("name", "model")
+        output_dir = Path("outputs")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        path = output_dir / f"{model_name}_history.json"
+        with open(path, "w") as f:
+            json.dump(history, f, indent=2)
+        print(f"Training history saved to {path}")
