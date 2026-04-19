@@ -4,16 +4,16 @@ data:
   root_dir: "data/celeba"
   image_size: 224
   batch_size: 64
-  num_workers: 4
-  pin_memory: true
-  train_split: 0.8
-  val_split: 0.1
-  test_split: 0.1
+  num_workers: 2
+  pin_memory: false
+  # CelebA official splits: 0=train, 1=val, 2=test
+  # Managed via list_eval_partition.txt, not random splitting
+  use_official_split: true
 
 model:
   name: "custom_cnn"         # "custom_cnn" | "mobilenet_v2" | "xception"
   pretrained: true
-  num_classes: 2
+  num_classes: 1             # binary classification via sigmoid
   dropout: 0.3
 
 training:
@@ -28,6 +28,7 @@ wandb:
   project: "dla-gender-recognition"
   entity: null               # set your wandb team/username
   log_interval: 10
+  enabled: true
 
 seed: 42
 device: "auto"               # "auto" | "cuda" | "mps" | "cpu"
