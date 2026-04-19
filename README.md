@@ -72,19 +72,35 @@ pip install -r requirements.txt
 
 ### Download CelebA
 
-The dataset should be placed in `data/celeba/` with this structure:
+Run the download script — it tries Kaggle, Google Drive, and torchvision in order:
+
+```bash
+python scripts/download_celeba.py
+```
+
+**Recommended**: set up Kaggle API first (most reliable, Google Drive often hits rate limits):
+
+1. Create an account at https://www.kaggle.com
+2. Go to **Account > Settings > API > Create New Token** — this downloads `kaggle.json`
+3. Place it at `~/.kaggle/kaggle.json`
+4. Run: `python scripts/download_celeba.py --method kaggle`
+
+You can also specify a method explicitly:
+
+```bash
+python scripts/download_celeba.py --method kaggle       # from Kaggle
+python scripts/download_celeba.py --method gdrive       # from Google Drive
+python scripts/download_celeba.py --method torchvision   # via torchvision
+```
+
+After download, the script validates the dataset and prints a summary. Expected layout:
 
 ```
 data/celeba/
-├── img_align_celeba/          # face images
+├── img_align_celeba/          # ~200K face images (.jpg)
 ├── list_attr_celeba.txt       # attribute annotations
 └── list_eval_partition.txt    # official train/val/test split
 ```
-
-Download options:
-1. [Official page](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) (manual)
-2. `torchvision.datasets.CelebA` (automatic, may be unreliable)
-3. `gdown` for Google Drive mirrors
 
 ### Weights & Biases
 
@@ -92,10 +108,30 @@ Download options:
 wandb login
 ```
 
+## Quickstart (one-shot setup)
+
+After cloning, this is everything your colleague needs to run:
+
+```bash
+# 1. Create environment and install dependencies
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# 2. Download dataset (set up Kaggle API first — see above)
+python scripts/download_celeba.py
+
+# 3. Log into wandb
+wandb login
+
+# 4. Train all models and evaluate
+./scripts/run_all_experiments.sh
+```
+
 ## Usage
 
 ```bash
-# Train a model
+# Train a single model
 python scripts/train.py --config configs/custom_cnn.yaml
 python scripts/train.py --config configs/mobilenet_v2.yaml
 python scripts/train.py --config configs/xception.yaml
