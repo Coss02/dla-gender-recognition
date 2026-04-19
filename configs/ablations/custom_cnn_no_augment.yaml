@@ -1,0 +1,34 @@
+# Ablation: Custom CNN WITHOUT data augmentation
+# Compare with configs/custom_cnn.yaml to measure augmentation impact
+
+data:
+  root_dir: "data/celeba"
+  image_size: 224
+  batch_size: 64
+  num_workers: 2
+  pin_memory: false
+  use_official_split: true
+  no_augmentation: true        # flag to disable train augmentations
+
+model:
+  name: "custom_cnn"
+  pretrained: false
+  num_classes: 1
+  dropout: 0.3
+
+training:
+  epochs: 30
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  optimizer: "adam"
+  scheduler: "cosine"
+  early_stopping_patience: 5
+
+wandb:
+  project: "dla-gender-recognition"
+  entity: null
+  log_interval: 10
+  enabled: true
+
+seed: 42
+device: "auto"
