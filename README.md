@@ -30,7 +30,7 @@ src/
 │   ├── custom_cnn.py         # 4-block CNN baseline
 │   └── finetuned.py          # MobileNetV2 and Xception with freeze/unfreeze
 ├── training/
-│   ├── trainer.py            # Training loop, early stopping, checkpointing, wandb
+│   ├── trainer.py            # Training loop, early stopping, checkpointing, local history
 │   └── metrics.py            # Accuracy, precision, recall, F1, confusion matrix
 └── utils/
     ├── config.py             # YAML loading and CLI override merging
@@ -39,7 +39,7 @@ src/
 configs/                      # YAML configs per model + ablation experiments
 scripts/                      # CLI entry points (train, evaluate, compare)
 notebooks/                    # Data exploration, failure analysis, learning curves
-tests/                        # Unit tests (39 tests, all passing)
+tests/                        # Unit tests
 report/                       # Report template and deliverables
 ```
 
@@ -102,11 +102,10 @@ data/celeba/
 └── list_eval_partition.txt    # official train/val/test split
 ```
 
-### Weights & Biases
+### Experiment Outputs
 
-```bash
-wandb login
-```
+Training saves the best checkpoint to `checkpoints/best_model.pt` and per-epoch
+metrics to `outputs/<model>_history.json` for offline analysis.
 
 ## Quickstart (one-shot setup)
 
@@ -121,10 +120,7 @@ pip install -r requirements.txt
 # 2. Download dataset (set up Kaggle API first — see above)
 python scripts/download_celeba.py
 
-# 3. Log into wandb
-wandb login
-
-# 4. Train all models and evaluate
+# 3. Train all models and evaluate
 ./scripts/run_all_experiments.sh
 ```
 

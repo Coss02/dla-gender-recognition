@@ -88,7 +88,6 @@ class TestTrainer:
         model = _TinyModel()
         optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
         config = {
-            "wandb": {"enabled": False},
             "model": {"name": "test"},
         }
 
@@ -110,13 +109,14 @@ class TestTrainer:
 
         assert len(history["train_loss"]) == 1
         assert len(history["val_loss"]) == 1
+        assert len(history["val_precision"]) == 1
+        assert len(history["val_recall"]) == 1
         assert 0.0 <= history["val_accuracy"][0] <= 1.0
 
     def test_checkpoint_saved(self, tmp_path):
         model = _TinyModel()
         optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
         config = {
-            "wandb": {"enabled": False},
             "model": {"name": "test"},
         }
 
@@ -146,7 +146,6 @@ class TestTrainer:
         model = _TinyModel()
         optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
         config = {
-            "wandb": {"enabled": False},
             "model": {"name": "test"},
         }
 

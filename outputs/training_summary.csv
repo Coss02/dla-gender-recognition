@@ -1,0 +1,3 @@
+model,epochs_ran,final_train_loss,final_val_loss,final_val_accuracy,final_val_f1,best_val_loss,best_val_loss_epoch,best_val_accuracy,best_val_accuracy_epoch,best_val_f1,best_val_f1_epoch
+custom_cnn,30,0.039239,0.037398,0.986108,0.983701,0.037398,30,0.986108,30,0.983701,30
+mobilenet_v2,20,0.246386,0.200431,0.918055,0.901904,0.198127,17,0.919263,17,0.904660,17

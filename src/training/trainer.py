@@ -1,7 +1,7 @@
 """Generic training loop for binary classification models.
 
 The Trainer handles epoch iteration, validation, early stopping,
-checkpoint saving, and optional wandb logging. It is model-agnostic:
+checkpoint saving, and local history logging. It is model-agnostic:
 any nn.Module with a single sigmoid output works.
 """
 
@@ -36,14 +36,14 @@ class EarlyStopping:
 
 
 class Trainer:
-    """Epoch-based training loop with validation, checkpointing, and wandb.
+    """Epoch-based training loop with validation, checkpointing, and history logging.
 
     Args:
         model: PyTorch model with single sigmoid output.
         optimizer: Configured optimizer.
         scheduler: Optional LR scheduler (stepped per epoch).
         device: Target device string ("cuda", "mps", "cpu").
-        config: Full config dict (logged to wandb).
+        config: Full config dict saved in checkpoints for reproducibility.
         checkpoint_dir: Where to save model checkpoints.
     """
 
@@ -67,19 +67,6 @@ class Trainer:
         self.criterion = nn.BCEWithLogitsLoss()
         self.best_val_loss = float("inf")
 
-        wandb_cfg = config.get("wandb", {})
-        self.wandb_enabled = wandb_cfg.get("enabled", False)
-        self.log_interval = wandb_cfg.get("log_interval", 10)
-
-        if self.wandb_enabled:
-            import wandb
-            wandb.init(
-                project=wandb_cfg.get("project", "dla-gender-recognition"),
-                entity=wandb_cfg.get("entity"),
-                config=config,
-            )
-            wandb.watch(self.model, log="all", log_freq=100)
-
     def fit(
         self,
         train_loader: DataLoader,
@@ -97,6 +84,8 @@ class Trainer:
             "train_loss": [],
             "val_loss": [],
             "val_accuracy": [],
+            "val_precision": [],
+            "val_recall": [],
             "val_f1": [],
             "learning_rate": [],
         }
@@ -109,6 +98,8 @@ class Trainer:
             history["train_loss"].append(train_loss)
             history["val_loss"].append(val_loss)
             history["val_accuracy"].append(val_metrics["accuracy"])
+            history["val_precision"].append(val_metrics["precision"])
+            history["val_recall"].append(val_metrics["recall"])
             history["val_f1"].append(val_metrics["f1"])
             history["learning_rate"].append(current_lr)
 
@@ -121,19 +112,6 @@ class Trainer:
                 f"lr: {current_lr:.6f}"
             )
 
-            if self.wandb_enabled:
-                import wandb
-                wandb.log({
-                    "epoch": epoch,
-                    "train_loss": train_loss,
-                    "val_loss": val_loss,
-                    "val_accuracy": val_metrics["accuracy"],
-                    "val_precision": val_metrics["precision"],
-                    "val_recall": val_metrics["recall"],
-                    "val_f1": val_metrics["f1"],
-                    "learning_rate": current_lr,
-                })
-
             if val_loss < self.best_val_loss:
                 self.best_val_loss = val_loss
                 self._save_checkpoint(epoch, val_loss, val_metrics)
@@ -144,10 +122,6 @@ class Trainer:
             if early_stopping.should_stop(val_loss):
                 print(f"Early stopping at epoch {epoch}")
                 break
-
-        if self.wandb_enabled:
-            import wandb
-            wandb.finish()
 
         self._save_history(history)
         return history
@@ -161,7 +135,7 @@ class Trainer:
         n_batches = 0
 
         progress = tqdm(loader, desc=f"Epoch {epoch}/{total_epochs} [train]", leave=False)
-        for batch_idx, (images, labels) in enumerate(progress):
+        for images, labels in progress:
             images = images.to(self.device)
             labels = labels.float().to(self.device)
 
@@ -174,10 +148,6 @@ class Trainer:
             running_loss += loss.item()
             n_batches += 1
             progress.set_postfix(loss=f"{loss.item():.4f}")
-
-            if self.wandb_enabled and batch_idx % self.log_interval == 0:
-                import wandb
-                wandb.log({"batch_loss": loss.item()})
 
         return running_loss / max(n_batches, 1)
 

@@ -1,0 +1,21 @@
+{
+  "model": "mobilenet_v2",
+  "checkpoint": "/Users/pietrocosseddu/Desktop/Magistrale/DLA/PROG_1/dla-gender-recognition/checkpoints/mobilenet_v2_best.pt",
+  "test_samples": 19962,
+  "metrics": {
+    "accuracy": 0.9151888588317804,
+    "precision": 0.8778865461847389,
+    "recall": 0.9066753078418665,
+    "f1": 0.8920487151692916
+  },
+  "confusion_matrix": [
+    [
+      11274,
+      973
+    ],
+    [
+      720,
+      6995
+    ]
+  ]
+}

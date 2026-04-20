@@ -42,7 +42,7 @@ class CelebAGenderDataset(Dataset):
 
         merged = attrs.join(partitions, how="inner")
         mask = merged["partition"] == SPLIT_MAP[split]
-        self.data = merged.loc[mask].reset_index()
+        self.data = merged.loc[mask].rename_axis("filename").reset_index()
 
     def _load_attributes(self) -> pd.DataFrame:
         """Parse list_attr_celeba.txt into a DataFrame with a binary 'male' column."""

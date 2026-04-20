@@ -33,6 +33,12 @@ def parse_args():
                         help="Override config (default: use config saved in checkpoint)")
     parser.add_argument("--output-dir", type=str, default="outputs",
                         help="Directory to save results")
+    parser.add_argument(
+        "--num-workers",
+        type=int,
+        default=0,
+        help="Number of DataLoader workers for evaluation (default: 0 for maximum compatibility)",
+    )
     return parser.parse_args()
 
 
@@ -94,7 +100,7 @@ def main():
         test_dataset,
         batch_size=data_cfg["batch_size"],
         shuffle=False,
-        num_workers=data_cfg["num_workers"],
+        num_workers=args.num_workers,
         pin_memory=data_cfg["pin_memory"],
     )
 

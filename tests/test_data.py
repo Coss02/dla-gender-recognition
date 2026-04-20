@@ -53,6 +53,36 @@ def fake_celeba(tmp_path: Path):
     return tmp_path
 
 
+@pytest.fixture()
+def fake_celeba_official_header(tmp_path: Path):
+    """Create a minimal CelebA layout matching the official header format."""
+    img_dir = tmp_path / "img_align_celeba"
+    img_dir.mkdir()
+
+    filenames = [f"{i:06d}.jpg" for i in range(1, 4)]
+    for fname in filenames:
+        img = Image.new("RGB", (178, 218), color="green")
+        img.save(img_dir / fname)
+
+    attr_lines = [
+        "3",
+        "Male",
+        "000001.jpg  1",
+        "000002.jpg -1",
+        "000003.jpg  1",
+    ]
+    (tmp_path / "list_attr_celeba.txt").write_text("\n".join(attr_lines) + "\n")
+
+    part_lines = [
+        "000001.jpg 0",
+        "000002.jpg 1",
+        "000003.jpg 2",
+    ]
+    (tmp_path / "list_eval_partition.txt").write_text("\n".join(part_lines) + "\n")
+
+    return tmp_path
+
+
 class TestCelebAGenderDataset:
     def test_train_split_length(self, fake_celeba):
         ds = CelebAGenderDataset(fake_celeba, split="train")
@@ -90,6 +120,12 @@ class TestCelebAGenderDataset:
         assert train_files.isdisjoint(val_files)
         assert train_files.isdisjoint(test_files)
         assert val_files.isdisjoint(test_files)
+
+    def test_official_header_still_exposes_filename_column(self, fake_celeba_official_header):
+        ds = CelebAGenderDataset(fake_celeba_official_header, split="train")
+        assert "filename" in ds.data.columns
+        _, label = ds[0]
+        assert label in (0, 1)
 
     def test_invalid_split_raises(self, fake_celeba):
         with pytest.raises(ValueError, match="split must be one of"):

@@ -30,11 +30,19 @@ Thumbs.db
 # Data (large files, download locally)
 data/*
 !data/.gitkeep
+scripts/data/
 
-# Model checkpoints and outputs
+# Model checkpoints
 checkpoints/
-outputs/
 runs/
+
+# Evaluation artifacts
+outputs/*
+!outputs/*.csv
+!outputs/*.json
+!outputs/*.png
+outputs/.cache/
+outputs/.matplotlib/
 
 # Weights & Biases
 wandb/

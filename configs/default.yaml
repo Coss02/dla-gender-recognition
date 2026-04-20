@@ -24,11 +24,5 @@ training:
   scheduler: "cosine"        # "cosine" | "step" | "none"
   early_stopping_patience: 5
 
-wandb:
-  project: "dla-gender-recognition"
-  entity: null               # set your wandb team/username
-  log_interval: 10
-  enabled: true
-
 seed: 42
 device: "auto"               # "auto" | "cuda" | "mps" | "cpu"

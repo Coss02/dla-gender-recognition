@@ -134,7 +134,7 @@ Loss function: BCEWithLogitsLoss (binary cross-entropy with logits).
 
 ### 4.2 Learning Curves
 
-<!-- TODO: Insert learning curve plots from outputs/ or wandb -->
+<!-- TODO: Insert learning curve plots generated from outputs/*_history.json -->
 <!-- TODO: Discuss convergence speed differences between models -->
 <!-- TODO: Note any overfitting (train loss << val loss) -->
 
